@@ -1,0 +1,145 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+/* styles.css */
+
+/* Generic elements */
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  font-family: "Press Start 2P", "Courier New", Courier, "Lucida Console",
+    monospace;
+  background-color: #0a0a23;
+  color: #ffffff;
+}
+
+h1 {
+  margin-top: 60px;
+  color: #ffcc00;
+  text-shadow: 2px 2px #000000;
+  font-size: 3em;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: #0a0a23;
+}
+
+div {
+  margin: 10px;
+}
+
+/* Canvas and Modal styling */
+
+#canvas-container{
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+}
+
+canvas {
+  border: 2px solid #000;
+  background-color: #fff;
+  border: 10px solid #ffcc00;
+  margin: 10px;
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1000; /* Ensure modal stays above other content */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  overflow: auto;
+  text-align: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 20% auto;
+  padding: 20px;
+  border-radius: 5px;
+  width: 60%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Button Styles */
+
+button {
+  background-image: linear-gradient(to right, #0072ff, #00c6ff);
+  border: none;
+  color: white;
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 300px;
+  font-family: "Press Start 2P", cursive;
+}
+
+button:hover {
+  background-image: linear-gradient(to right, #00c6ff, #0072ff);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px #666;
+}
+
+#enterButton {
+  display: block;
+  margin-top: 20px;
+  padding: 10px 40px;
+  font-size: 18px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#startButton:hover {
+  background-color: #45a049;
+}
+
+#pauseButton {
+  background-color: #ff6347;
+  color: white;
+  border-radius: 5px;
+}
+
+#resumeButton {
+  display: block;
+  margin-top: 5px;
+  padding: 10px 40px;
+  font-size: 18px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* Timer stye*/
+
+#timer {
+  font-size: 1.2em;
+  font-weight: bold;
+  padding-left: 4px;
+}
+

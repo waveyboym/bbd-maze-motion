@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Maze Motion | Login</title>
+  <link rel="stylesheet" href="style/login.css">
+</head>
+<body>
+  <h1>MAZE MOTION</h1>
+  <h1>WELCOME</h1>
+  <input type="text" id="roomId" placeholder="Enter Room ID">
+  <button id="joinRoom">JOIN LOBBY</button>
+  <button id="createRoom">CREATE LOBBY</button>
+  <button id="joinRoomAsViewer">WATCH A GAME</button>
+  <div id="status"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    document.getElementById('createRoom').onclick = () => {
+      socket.emit('createRoom');
+    };
+
+    document.getElementById('joinRoom').onclick = () => {
+      const roomId = document.getElementById('roomId').value;
+      // if room id is undefined, show error message
+      if (!roomId) {
+        document.getElementById('status').innerText = `Please enter a room ID`;
+        return;
+      }
+      window.location.href = `/room/${roomId}`;
+    };
+
+    document.getElementById('joinRoomAsViewer').onclick = () => {
+      const roomId = document.getElementById('roomId').value;
+      // if room id is undefined, show error message
+      if (!roomId) {
+        document.getElementById('status').innerText = `Please enter a room ID`;
+        return;
+      }
+      window.location.href = `/viewer/${roomId}`;
+    };
+
+    socket.on('roomCreated', (data) => {
+      window.location.href = `/room/${data.roomId}`;
+    });
+
+    socket.on('roomNotFound', () => {
+      document.getElementById('status').innerText = `Room not found`;
+    });
+  </script>
+</body>
+</html>

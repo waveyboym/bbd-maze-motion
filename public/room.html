@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Maze Motion | Lobby </title>
+    <link rel="stylesheet" href="../style/style.css" />
+    <script src="script.js"></script>
+    <script src="gyro.js"></script>
+  </head>
+  <body>
+    <header>
+    </header>
+    <h1>Lobby</h1>
+    <div id="roomId"></div>
+    <br>
+    <div id="activity"></div>
+    <br>
+    <div id="status"></div>
+    <br>
+    <div id="players"></div>
+    <br>
+    <div id="gyroX"></div>
+    <div id="gyroY"></div>
+    <div id="gyroZ"></div>
+    <div id="controls">
+      <button id="startGame">Start Game</button>
+    </div>
+    <button id="fullscreenBtn">Toggle Fullscreen</button>
+    <button id="permissions">Request Permisions</button>
+    <button id="pauseButton">Pause</button>
+    <span id="timer">Time: 00:00</span>
+    <div id="game">
+      <div id="pauseGameModal" class="modal">
+        <div class="modal-content">
+          <h2>Game Paused</h2>
+          <button id="resumeButton">Resume Game</button>
+        </div>
+      </div>
+    </div>
+    <div id="canvas-container">
+      <canvas id="gameCanvas"></canvas>
+    </div>
+    <button id="back">&lt;-</button>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+      const socket = io();
+      const roomId = window.location.pathname.split("/").pop();
+      document.getElementById("roomId").innerText = `Lobby ID -> ${roomId}`;
+
+      let maze = [];
+      let id = '';
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      let ball = { x: 1, y: 1 };
+      let ballcol = 'red';
+      const cellSize = 7;
+      let gameEnd = false;
+
+      window.addEventListener('keydown', event => {
+          switch (event.key) {
+              case 'ArrowUp':
+                  moveBall(maze, ball, 0, -1, ctx, cellSize);
+                  break;
+              case 'ArrowDown':
+                  moveBall(maze, ball, 0, 1, ctx, cellSize);
+                  break;
+              case 'ArrowLeft':
+                  moveBall(maze, ball, -1, 0, ctx, cellSize);
+                  break;
+              case 'ArrowRight':
+                  moveBall(maze, ball, 1, 0, ctx, cellSize);
+                  break;
+          }
+      });
+
+      function handleOrientation(event) {
+          var x = document.getElementById("gyroX");   
+          var y = document.getElementById("gyroY");
+          var z = document.getElementById("gyroZ");
+          const y_val = event.beta;
+          const z_val = event.gamma;
+          y.innerText = "Y: " + Math.round(y_val);
+          z.innerText = "Z: " + Math.round(z_val);
+          
+          // scale y_val and z_val to be between -1 and 1 for [-90, 90]
+          const y_scaled = y_val / 90;
+          const z_scaled = z_val / 90;
+          x.innerText = "y_scaled: " + y_scaled + " z_scaled: " + z_scaled;
+
+          moveBall(maze, ball, z_scaled, y_scaled, ctx, cellSize);
+      }
+
+      window.addEventListener("load", function () {
+          window.addEventListener('deviceorientation', handleOrientation);
+      });
+
+      function requestPerm() {
+          console.log("loaded")
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission()
+                .then((state) => {
+                    if (state === 'granted') {
+                    window.addEventListener('devicemotion', handleOrientation);
+                    } else {
+                    console.error('Request to access the orientation was rejected');
+                    }
+                })
+                .catch(console.error);
+            } else {
+                window.addEventListener('devicemotion', handleOrientation);
+            }
+        }
+
+      document.getElementById("startGame").onclick = () => {
+        socket.emit("startGame", roomId);
+        startTimer();
+      };
+
+      document.getElementById('back').addEventListener('click', function() {
+        window.location.href = '/'; 
+      });
+
+      document.getElementById('permissions').addEventListener('click', function() {
+        requestPerm();
+      });
+
+      socket.emit("joinRoom", roomId);
+
+      socket.on("roomJoined", (data) => {
+        document.getElementById(
+          "activity"
+        ).innerText = `Share this room ID -> ${data.roomId}`;
+      });
+
+      socket.on("roomNotFound", () => {
+        const statusElement = document.getElementById("status");
+        statusElement.innerText = `Room not found. Join an existing room or create a new room.`;
+        statusElement.style.color = "red"; 
+        document.getElementById("startGame").style.display = "none";
+        document.getElementById("pauseButton").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+      });
+
+      socket.on("roomFull", () => {
+        const statusElement = document.getElementById("status");
+        statusElement.innerText = `Room is full`;
+        statusElement.style.color = "red";
+        document.getElementById("startGame").style.display = "none";
+        document.getElementById("pauseButton").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+      });
+
+      socket.on("playersInRoom", (data) => {
+        console.log(data);
+        document.getElementById(
+          "players"
+        ).innerText = `Current Lobby -> ${data.Users.map((user) => {
+          return user.id;
+        }).join(", ")}`;
+        if(id === '') {
+          id = data.id;
+        }
+      });
+
+      socket.on("gameReady", () => {
+        const statusElement = document.getElementById("status");
+        statusElement.innerText = `Game ready to start!`;
+        statusElement.style.color = "green";
+        document.getElementById("startGame").style.display = "block";
+        document.getElementById("pauseButton").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+      });
+
+      socket.on("gameNotReady", () => {
+        const statusElement = document.getElementById("status");
+        statusElement.innerText = `Not enough players to start the game.`;
+        statusElement.style.color = "red";
+        document.getElementById("startGame").style.display = "none";
+        document.getElementById("pauseButton").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+      });
+
+      socket.on("gameStarted", (data) => {
+        document.getElementById("status").innerText = `Game started!`;
+        document.getElementById("startGame").style.display = "none";
+        document.getElementById("pauseButton").style.display = "inline";
+        document.getElementById("timer").style.display = "inline";
+
+        // from list of users, find the user with the same id as the current user
+        const user = data.Users.find((user) => user.id === id);
+        if (user) {
+          maze = data.maze;
+          ballcol = user.color;
+          ball = user.position;
+          drawMaze(data.maze, ctx, cellSize);
+          drawBall(user.position, ctx, cellSize);
+          data.Users.map((user) => {
+            if (user.id !== id) {
+              ctx.fillStyle = user.color;
+              ctx.beginPath();
+              ctx.arc(user.position.x * cellSize + cellSize / 2, user.position.y * cellSize + cellSize / 2, cellSize / 2, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          });
+        }
+      });
+
+      socket.on('updatePositions', (data) => {
+            // {Users: [{id: 'player1', position: { x: 0, y: 0 }}, {id: 'player2', position: { x: 0, y: 0 }}]}
+            for(let i = 0; i < data.Users.length; i++) {
+              if (data.Users[i].id !== id) {
+                drawOpponentsBall(data.Users[i].position, data.Old[i].position, ctx, cellSize, data.Users[i].color);
+              }
+            }
+      });
+
+      socket.on("gameEnded", (data) => {
+        document.getElementById("status").innerText = `Game ended! Winner: ${data.id}`;
+        document.getElementById("startGame").style.display = "none";
+        document.getElementById("pauseButton").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+        gameEnd = true;
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("startGameModal");
+        const enterButton = document.getElementById("enterButton");
+
+
+        if (modal && enterButton) {
+          modal.style.display = "block";
+
+          enterButton.addEventListener("click", function () {
+            modal.style.display = "none"; 
+          });
+        } else {
+          console.error("Modal or Start Button not found.");
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const pauseButton = document.getElementById("pauseButton");
+        const resumeButton = document.getElementById("resumeButton");
+        const pauseGameModal = document.getElementById("pauseGameModal");
+
+        pauseButton.addEventListener("click", () => {
+          pauseGameModal.style.display = "flex";
+        });
+
+        resumeButton.addEventListener("click", () => {
+          pauseGameModal.style.display = "none";
+        });
+      });
+
+      document.getElementById('fullscreenBtn').addEventListener('click', function() {
+        const canvas = document.getElementById('gameCanvas');
+        const requestFullscreen = canvas.requestFullscreen || canvas.mozRequestFullScreen || canvas.webkitRequestFullscreen || canvas.msRequestFullscreen;
+        const exitFullscreen = document.exitFullscreen || document.mozCancelFullScreen || document.webkitExitFullscreen || document.msExitFullscreen;
+
+        if (!document.fullscreenElement) {
+          requestFullscreen.call(canvas).catch(err => {
+            alert("Fullscreen mode failed to activate. Make sure you're using a compatible browser and your site is served over HTTPS.");
+            console.error("Error attempting to enable fullscreen mode:", err.message);
+          });
+        } else {
+          exitFullscreen.call(document).catch(err => {
+            alert("Failed to exit fullscreen mode.");
+            console.error("Error attempting to disable fullscreen mode:", err.message);
+          });
+        }
+      });
+
+      let timerInterval;
+      let totalSeconds = 0;
+      let isPaused = false;
+
+      function startTimer() {
+        totalSeconds = 0;
+        timerInterval = setInterval(updateTimer, 1000);
+      }
+
+      function updateTimer() {
+        if (!isPaused) {
+          totalSeconds++;
+          const minutes = Math.floor(totalSeconds / 60);
+          const seconds = totalSeconds % 60;
+          document.getElementById("timer").innerHTML = `Time: ${
+            minutes < 10 ? "0" : ""
+          }${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        }
+      }
+
+      function pauseTimer() {
+        isPaused = true;
+      }
+
+      function resumeTimer() {
+        isPaused = false;
+      }
+
+      document
+        .getElementById("enterButton")
+        .addEventListener("click", function () {
+          document.getElementById("startGameModal").style.display = "none";
+
+        });
+
+      document
+        .getElementById("pauseButton")
+        .addEventListener("click", function () {
+          isPaused = !isPaused;
+          if (isPaused) {
+            pauseTimer();
+          } else {
+            resumeTimer();
+          }
+        });
+
+        function drawMaze(maze, ctx, cellSize) {
+            for (let y = 0; y < maze.length; y++) {
+                for (let x = 0; x < maze[y].length; x++) {
+                    ctx.fillStyle = maze[y][x] === 2 ? 'green': maze[y][x] === 1 ? 'black' : 'white';
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        function drawBall(ball, ctx, cellSize) {
+            ctx.fillStyle = ballcol;
+            ctx.beginPath();
+            ctx.arc(ball.x * cellSize + cellSize / 2, ball.y * cellSize + cellSize / 2, cellSize / 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawOpponentsBall(ball, old, ctx, cellSize, color) {
+          ctx.fillStyle = 'white';
+          ctx.fillRect(old.x * cellSize, old.y * cellSize, cellSize, cellSize);
+          
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(ball.x * cellSize + cellSize / 2, ball.y * cellSize + cellSize / 2, cellSize / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        function clearBall(ball, ctx, cellSize) {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(ball.x * cellSize, ball.y * cellSize, cellSize, cellSize);
+        }
+
+        function moveBall(maze, ball, dx, dy, ctx, cellSize) {
+            if(isPaused) return;
+            if(maze[ball.y][ball.x] === 2 || gameEnd) {return;}
+            const newX = Math.floor(ball.x + dx);
+            const newY = Math.floor(ball.y + dy);
+            if (newX >= 0 && newX < maze[0].length && newY >= 0 && newY < maze.length && (maze[newY][newX] === 0 || maze[newY][newX] === 2)) {
+                clearBall(ball, ctx, cellSize);
+                ball.x += dx;
+                ball.y += dy;
+                drawBall(ball, ctx, cellSize);
+                //send socket updates
+                socket.emit('updatePosition', {roomId, position: ball});
+            }
+        }
+
+    </script>
+  </body>
+</html>
