@@ -44,6 +44,7 @@
       const cellSize = 7;
       let gameEnd = false;
       let gameStart = false;
+      let mobilebypass = false;
 
       const keys = {
             ArrowUp: false,
@@ -74,8 +75,9 @@
           tiltX = Math.max(-1, Math.min(1, z_val / 90));
           tiltY = Math.max(-1, Math.min(1, y_val / 90));
 
-          ball.vy = tiltY * ball.speed;
-          ball.vx = tiltX * ball.speed;
+          motion.vy = tiltY * ball.speed;
+          motion.vx = tiltX * ball.speed;
+          mobilebypass = true;
       }
 
       window.addEventListener("load", function () {
@@ -88,8 +90,8 @@
             if (keys.ArrowLeft) motion.vx = -motion.speed;
             if (keys.ArrowRight) motion.vx = motion.speed;
 
-            if (!keys.ArrowUp && !keys.ArrowDown) motion.vy = 0;
-            if (!keys.ArrowLeft && !keys.ArrowRight) motion.vx = 0;
+            if (!keys.ArrowUp && !keys.ArrowDown && !mobilebypass) motion.vy = 0;
+            if (!keys.ArrowLeft && !keys.ArrowRight && !mobilebypass) motion.vx = 0;
 
             const nextX = ball.x + motion.vx;
             const nextY = ball.y + motion.vy;
