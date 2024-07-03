@@ -84,8 +84,8 @@
           console.log("tiltX: ", tiltX);
           console.log("tiltY: ", tiltY);
 
-          motion.vy = tiltY * ball.speed;
-          motion.vx = tiltX * ball.speed;
+          motion.vy = tiltY * motion.speed;
+          motion.vx = tiltX * motion.speed;
 
           console.log("motion: ", motion);
           mobilebypass = true;
