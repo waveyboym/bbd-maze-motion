@@ -75,13 +75,17 @@
           tiltX = Math.max(-1, Math.min(1, z_val / 90));
           tiltY = Math.max(-1, Math.min(1, y_val / 90));
 
+          console.log("tiltX: ", tiltX);
+          console.log("tiltY: ", tiltY);
+
           motion.vy = tiltY * ball.speed;
           motion.vx = tiltX * ball.speed;
+
+          console.log("motion: ", motion);
           mobilebypass = true;
       }
 
       function update() {
-          console.log("here 84 ");
             if (keys.ArrowUp) motion.vy = -motion.speed;
             if (keys.ArrowDown) motion.vy = motion.speed;
             if (keys.ArrowLeft) motion.vx = -motion.speed;
