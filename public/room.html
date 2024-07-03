@@ -76,24 +76,24 @@
           z.innerText = "Z: " + Math.round(z_val);
 
           // Normalize the tilt to the range [-1, 1]
-          tiltX = Math.max(-1, Math.min(1, z_val / 90));
-          tiltY = Math.max(-1, Math.min(1, y_val / 90));
+          //tiltX = Math.max(-1, Math.min(1, z_val / 90));
+          //tiltY = Math.max(-1, Math.min(1, y_val / 90));
 
           if(mobilebypass && gameStart){
             //if y negative, move up
-            if(tiltY < 0){
+            if(y_val < 0){
               motion.vy = -motion.speed;
             }
             //if y positive, move down
-            else if(tiltY > 0){
+            else if(y_val > 0){
               motion.vy = motion.speed;
             }
             //if x negative, move left
-            if(tiltX < 0){
+            if(z_val < 0){
               motion.vx = -motion.speed;
             }
             //if x positive, move right
-            else if(tiltX > 0){
+            else if(z_val > 0){
               motion.vx = motion.speed;
             }
           }
