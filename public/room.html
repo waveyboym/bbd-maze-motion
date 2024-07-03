@@ -23,6 +23,9 @@
     </div>
     <button id="fullscreenBtn">Toggle Fullscreen</button>
     <button id="permissions">Request Permisions</button>
+    <div id="gyroX"></div>
+    <div id="gyroY"></div>
+    <div id="gyroZ"></div>
     <div id="canvas-container">
       <canvas id="gameCanvas"></canvas>
     </div>
@@ -68,8 +71,11 @@
       function handleOrientation(event) {
           const y_val = event.beta;
           const z_val = event.gamma;
-          //y.innerText = "Y: " + Math.round(y_val);
-          //z.innerText = "Z: " + Math.round(z_val);
+          var x = document.getElementById("gyroX");   
+          var y = document.getElementById("gyroY");
+          var z = document.getElementById("gyroZ");
+          y.innerText = "Y: " + Math.round(y_val);
+          z.innerText = "Z: " + Math.round(z_val);
 
           // Normalize the tilt to the range [-1, 1]
           tiltX = Math.max(-1, Math.min(1, z_val / 90));
