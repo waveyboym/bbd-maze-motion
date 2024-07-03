@@ -158,7 +158,7 @@ io.on("connection", (socket) => {
         });
 
         // if the user has reached the goal, emit the gameEnded event
-        if(rooms[data.roomId].maze[user.position.y][user.position.x] === 2){
+        if(rooms[data.roomId].maze[Math.floor(user.position.y)][Math.floor(user.position.x)] === 2){
             // Broadcast the updated positions to all users in the room except the one that sent the message
             socket.to(data.roomId).emit('updatePositions', {Users: rooms[data.roomId].Users, Old: oldarray});
             // Broadcast the updated positions to all viewers in the room
