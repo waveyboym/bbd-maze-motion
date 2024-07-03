@@ -80,11 +80,8 @@
           mobilebypass = true;
       }
 
-      window.addEventListener("load", function () {
-          window.addEventListener('deviceorientation', handleOrientation);
-      });
-
       function update() {
+          console.log("here 84 ");
             if (keys.ArrowUp) motion.vy = -motion.speed;
             if (keys.ArrowDown) motion.vy = motion.speed;
             if (keys.ArrowLeft) motion.vx = -motion.speed;
@@ -97,6 +94,7 @@
             const nextY = ball.y + motion.vy;
 
             if(gameStart){
+              console.log("nextx and y: ", nextX, nextY);
               if(maze[Math.floor(ball.y)][Math.floor(ball.x)] !== 2 && gameEnd !== true) {
                 if (nextX >= 0 && nextX < maze[0].length && nextY >= 0 && nextY < maze.length
                  && (maze[Math.floor(nextY)][Math.floor(nextX)] === 0 || maze[Math.floor(nextY)][Math.floor(nextX)] === 2)) {
@@ -104,6 +102,7 @@
                     ball.x += motion.vx;
                     ball.y += motion.vy;
                     drawBall(ball, ctx, cellSize);
+                    console.log("ball: ", ball);
                     socket.emit('updatePosition', {roomId, position: ball});
                 }
               }
@@ -116,7 +115,6 @@
       update();
 
       function requestPerm() {
-          console.log("loaded")
             if (typeof DeviceMotionEvent.requestPermission === 'function') {
                 DeviceMotionEvent.requestPermission()
                 .then((state) => {
