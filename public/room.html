@@ -88,7 +88,6 @@
           motion.vx = tiltX * motion.speed;
 
           console.log("motion: ", motion);
-          mobilebypass = true;
       }
 
       function update() {
@@ -124,18 +123,24 @@
 
       update();
 
+      window.addEventListener("load", function () {
+          window.addEventListener('deviceorientation', handleOrientation);
+      });
+
       function requestPerm() {
             if (typeof DeviceMotionEvent.requestPermission === 'function') {
                 DeviceMotionEvent.requestPermission()
                 .then((state) => {
                     if (state === 'granted') {
-                    window.addEventListener('devicemotion', handleOrientation);
+                      mobilebypass = true;
+                      window.addEventListener('devicemotion', handleOrientation);
                     } else {
                     console.error('Request to access the orientation was rejected');
                     }
                 })
                 .catch(console.error);
             } else {
+                mobilebypass = true;
                 window.addEventListener('devicemotion', handleOrientation);
             }
         }
