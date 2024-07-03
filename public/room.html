@@ -23,7 +23,6 @@
     </div>
     <button id="fullscreenBtn">Toggle Fullscreen</button>
     <button id="permissions">Request Permisions</button>
-    <div id="gyroX"></div>
     <div id="gyroY"></div>
     <div id="gyroZ"></div>
     <div id="canvas-container">
@@ -71,7 +70,6 @@
       function handleOrientation(event) {
           const y_val = event.beta;
           const z_val = event.gamma;
-          var x = document.getElementById("gyroX");   
           var y = document.getElementById("gyroY");
           var z = document.getElementById("gyroZ");
           y.innerText = "Y: " + Math.round(y_val);
@@ -81,13 +79,24 @@
           tiltX = Math.max(-1, Math.min(1, z_val / 90));
           tiltY = Math.max(-1, Math.min(1, y_val / 90));
 
-          console.log("tiltX: ", tiltX);
-          console.log("tiltY: ", tiltY);
-
-          motion.vy = tiltY * motion.speed;
-          motion.vx = tiltX * motion.speed;
-
-          console.log("motion: ", motion);
+          if(mobilebypass && gameStart){
+            //if y negative, move up
+            if(tiltY < 0){
+              motion.vy = -motion.speed;
+            }
+            //if y positive, move down
+            else if(tiltY > 0){
+              motion.vy = motion.speed;
+            }
+            //if x negative, move left
+            if(tiltX < 0){
+              motion.vx = -motion.speed;
+            }
+            //if x positive, move right
+            else if(tiltX > 0){
+              motion.vx = motion.speed;
+            }
+          }
       }
 
       function update() {
@@ -140,7 +149,6 @@
                 })
                 .catch(console.error);
             } else {
-                mobilebypass = true;
                 window.addEventListener('devicemotion', handleOrientation);
             }
         }
