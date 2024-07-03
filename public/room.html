@@ -83,11 +83,25 @@
           z.innerText = "Z: " + Math.round(z_val);
           
           // scale y_val and z_val to be between -1 and 1 for [-90, 90]
-          const y_scaled = y_val / 90;
-          const z_scaled = z_val / 90;
-          x.innerText = "y_scaled: " + y_scaled + " z_scaled: " + z_scaled;
+          //const y_scaled = y_val / 90;
+          //const z_scaled = z_val / 90;
+          //x.innerText = "y_scaled: " + y_scaled + " z_scaled: " + z_scaled;
+//
+          //moveBall(maze, ball, z_scaled, y_scaled, ctx, cellSize);
 
-          moveBall(maze, ball, z_scaled, y_scaled, ctx, cellSize);
+          if (y_val > 0) {
+              moveBall(maze, ball, 0, 1, ctx, cellSize);
+          } 
+          else if (y_val < 0) {
+              moveBall(maze, ball, 0, -1, ctx, cellSize);
+          }
+
+          if (z_val > 0) {
+              moveBall(maze, ball, 1, 0, ctx, cellSize);
+          } 
+          else if (z_val < 0) {
+              moveBall(maze, ball, -1, 0, ctx, cellSize);
+          }
       }
 
       window.addEventListener("load", function () {
@@ -350,12 +364,12 @@
         function moveBall(maze, ball, dx, dy, ctx, cellSize) {
             if(isPaused) return;
             if(maze[ball.y][ball.x] === 2 || gameEnd) {return;}
-            const newX = Math.floor(ball.x + dx);
-            const newY = Math.floor(ball.y + dy);
+            const newX = ball.x + dx;
+            const newY = ball.y + dy;
             if (newX >= 0 && newX < maze[0].length && newY >= 0 && newY < maze.length && (maze[newY][newX] === 0 || maze[newY][newX] === 2)) {
                 clearBall(ball, ctx, cellSize);
-                ball.x += dx;
-                ball.y += dy;
+                ball.x = newX;
+                ball.y = newY;
                 drawBall(ball, ctx, cellSize);
                 //send socket updates
                 socket.emit('updatePosition', {roomId, position: ball});
