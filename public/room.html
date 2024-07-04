@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maze Motion | Lobby </title>
     <link rel="stylesheet" href="../style/style.css" />
     <script src="script.js"></script>
@@ -23,8 +25,6 @@
     </div>
     <button id="fullscreenBtn">Toggle Fullscreen</button>
     <button id="permissions">Request Permisions</button>
-    <div id="gyroY"></div>
-    <div id="gyroZ"></div>
     <div id="canvas-container">
       <canvas id="gameCanvas"></canvas>
     </div>
@@ -72,19 +72,6 @@
       function handleOrientation(event) {
           const y_val = event.beta;
           const z_val = event.gamma;
-          var y = document.getElementById("gyroY");
-          var z = document.getElementById("gyroZ");
-          y.innerText = "Y: " + Math.round(y_val);
-          z.innerText = "Z: " + Math.round(z_val);
-
-          // Normalize the tilt to the range [-1, 1]
-          //tiltX = Math.max(-1, Math.min(1, z_val / 90));
-          //tiltY = Math.max(-1, Math.min(1, y_val / 90));
-
-          // if both y_val and z_val are 0, then it is not a mobile device
-          //if(y_val === 0 && z_val === 0){
-          //mobilebypass = false;
-          //}
 
           if(y_val < 0){
             motion.vy = (y_val / 100) * motion.speed;
@@ -203,9 +190,8 @@
       socket.on("playersInRoom", (data) => {
         document.getElementById(
           "players"
-        ).innerText = `Current Lobby -> ${data.Users.map((user) => {
-          return user.id;
-        }).join(", ")}`;
+        ).innerText = `Current Lobby -> ${data.Users.length} players`;
+
         if(id === '') {
           id = data.id;
         }

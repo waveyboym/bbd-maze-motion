@@ -48,13 +48,10 @@
         });
 
         socket.on('playersInRoom', (data) => {
-            const playersElement = document.getElementById('players');
-            playersElement.innerHTML = 'Players:';
-            data.Users.forEach((user) => {
-                const playerItem = document.createElement('li');
-                playerItem.innerText = `Player ID: ${user.id}`;
-                playersElement.appendChild(playerItem);
-            });
+            document.getElementById(
+                "players"
+                ).innerText = `Current Lobby -> ${data.Users.length} players`;
+
         });
 
         socket.on('gameReady', () => {
@@ -87,6 +84,7 @@
         });
 
         socket.on('updatePositions', (data) => {
+            drawMaze(data.maze, ctx, cellSize);
             // {Users: [{id: 'player1', position: { x: 0, y: 0 }}, {id: 'player2', position: { x: 0, y: 0 }}]}
             for(let i = 0; i < data.Users.length; i++) {
                 drawOpponentsBall(data.Users[i].position, data.Old[i].position, ctx, cellSize, data.Users[i].color);
