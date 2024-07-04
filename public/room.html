@@ -85,19 +85,19 @@
           //}
 
           if(y_val < 0){
-            motion.vy = ((y_val / 100) * motion.speed) - motion.speed;
+            motion.vy = (y_val / 100) * motion.speed;
           }
           //if y positive, move down
           else if(y_val > 0){
-            motion.vy = ((y_val / 100) * motion.speed) + motion.speed;
+            motion.vy = (y_val / 100) * motion.speed;
           }
           //if x negative, move left
           if(z_val < 0){
-            motion.vx = ((z_val / 100) * motion.speed) - motion.speed;
+            motion.vx = (z_val / 100) * motion.speed;
           }
           //if x positive, move right
           else if(z_val > 0){
-            motion.vx = ((z_val / 100) * motion.speed) + motion.speed;
+            motion.vx = (z_val / 100) * motion.speed; // 0.0 - 0.5
           }
       }
 
@@ -112,7 +112,6 @@
             const nextY = ball.y + motion.vy;
 
             if(gameStart){
-              console.log("nextx and y: ", nextX, nextY);
               if(maze[Math.floor(ball.y)][Math.floor(ball.x)] !== 2 && gameEnd !== true) {
                 if (nextX >= 0 && nextX < maze[0].length && nextY >= 0 && nextY < maze.length
                  && (maze[Math.floor(nextY)][Math.floor(nextX)] === 0 || maze[Math.floor(nextY)][Math.floor(nextX)] === 2)) {
