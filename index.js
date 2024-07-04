@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
             
             if (viewers[roomId]) {
                 viewers[roomId].forEach(viewer => {
-                    socket.to(viewer).emit('playersInRoom', { Users: rooms[roomId].Users, maze: rooms[roomId].maze});
+                    socket.to(viewer).emit('playersInRoom', { Users: rooms[roomId].Users});
                 });
             }
 
@@ -99,7 +99,7 @@ io.on("connection", (socket) => {
             viewers[roomId].push(socket.id);
             console.log(`Viewer joined room with ID: ${roomId}`);
             socket.emit('roomJoined', { roomId: roomId, team: 'spectator'});
-            socket.emit('playersInRoom', { Users: rooms[roomId].Users });
+            socket.emit('playersInRoom', { Users: rooms[roomId].Users, maze: rooms[roomId].maze });
         }
         else {
             socket.emit('roomNotFound');
@@ -160,11 +160,11 @@ io.on("connection", (socket) => {
         // if the user has reached the goal, emit the gameEnded event
         if(rooms[data.roomId].maze[Math.floor(user.position.y)][Math.floor(user.position.x)] === 2){
             // Broadcast the updated positions to all users players in the room
-            socket.to(data.roomId).emit('updatePositions', {Users: rooms[data.roomId].Users, Old: oldarray, maze: rooms[roomId].maze});
+            socket.to(data.roomId).emit('updatePositions', {Users: rooms[data.roomId].Users, Old: oldarray, maze: rooms[data.roomId].maze});
             // Broadcast the updated positions to all viewers in the room
             if (viewers[data.roomId]) {
                 viewers[data.roomId].forEach(viewer => {
-                    socket.to(viewer).emit('updatePositions', {Users: rooms[data.roomId].Users, Old: oldarray, maze: rooms[roomId].maze});
+                    socket.to(viewer).emit('updatePositions', {Users: rooms[data.roomId].Users, Old: oldarray, maze: rooms[data.roomId].maze});
                 });
             }
             
@@ -178,11 +178,11 @@ io.on("connection", (socket) => {
         }
         else{
             // Broadcast the updated positions to all players in the room
-            socket.to(data.roomId).emit('updatePositions', {Users: rooms[data.roomId].Users, Old: oldarray, maze: rooms[roomId].maze});
+            socket.to(data.roomId).emit('updatePositions', {Users: rooms[data.roomId].Users, Old: oldarray, maze: rooms[data.roomId].maze});
             // Broadcast the updated positions to all viewers in the room
             if (viewers[data.roomId]) {
                 viewers[data.roomId].forEach(viewer => {
-                    socket.to(viewer).emit('updatePositions', {Users: rooms[data.roomId].Users, Old: oldarray, maze: rooms[roomId].maze});
+                    socket.to(viewer).emit('updatePositions', {Users: rooms[data.roomId].Users, Old: oldarray, maze: rooms[data.roomId].maze});
                 });
             }
         }
