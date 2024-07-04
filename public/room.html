@@ -80,9 +80,9 @@
           //tiltY = Math.max(-1, Math.min(1, y_val / 90));
 
           // if both y_val and z_val are 0, then it is not a mobile device
-          if(y_val === 0 && z_val === 0){
-            mobilebypass = false;
-          }
+          //if(y_val === 0 && z_val === 0){
+          //mobilebypass = false;
+          //}
 
           if(y_val < 0){
             motion.vy = -motion.speed;
@@ -107,9 +107,7 @@
             if (keys.ArrowLeft) motion.vx = -motion.speed;
             if (keys.ArrowRight) motion.vx = motion.speed;
 
-            if (!keys.ArrowUp && !keys.ArrowDown && !mobilebypass) motion.vy = 0;
-            if (!keys.ArrowLeft && !keys.ArrowRight && !mobilebypass) motion.vx = 0;
-
+            
             const nextX = ball.x + motion.vx;
             const nextY = ball.y + motion.vy;
 
@@ -126,6 +124,10 @@
                     socket.emit('updatePosition', {roomId, position: ball});
                 }
               }
+              
+               motion.vy = 0;
+               motion.vx = 0;
+
             }
 
 
