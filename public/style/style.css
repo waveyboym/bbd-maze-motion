@@ -8,7 +8,6 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   margin: 0;
   font-family: "Press Start 2P", "Courier New", Courier, "Lucida Console",
     monospace;
@@ -35,18 +34,14 @@ div {
 /* Canvas and Modal styling */
 
 #canvas-container{
-  width: 80%;
+  width: 100vw;
   display: flex;
   justify-content: center;
 }
 
 canvas {
-  border: 2px solid #000;
-  background-color: #fff;
-  border: 10px solid #ffcc00;
   margin: 10px;
-  width: 100%;
-  height: 100%;
+  width: 70%;
 }
 
 .modal {
