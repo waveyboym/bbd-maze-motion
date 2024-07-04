@@ -52,6 +52,10 @@
                 "players"
                 ).innerText = `Current Lobby -> ${data.Users.length} players`;
 
+            if (data.maze.length !== 0){
+                maze = data.maze;
+                drawMaze(maze, ctx, cellSize);
+            }
         });
 
         socket.on('gameReady', () => {
