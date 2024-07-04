@@ -85,19 +85,19 @@
           //}
 
           if(y_val < 0){
-            motion.vy = (y_val / 100) * motion.speed;
+            motion.vy = ((y_val / 100) * motion.speed) - motion.speed;
           }
           //if y positive, move down
           else if(y_val > 0){
-            motion.vy = (y_val / 100) * motion.speed;
+            motion.vy = ((y_val / 100) * motion.speed) + motion.speed;
           }
           //if x negative, move left
           if(z_val < 0){
-            motion.vx = (z_val / 100) * motion.speed;
+            motion.vx = ((z_val / 100) * motion.speed) - motion.speed;
           }
           //if x positive, move right
           else if(z_val > 0){
-            motion.vx = (z_val / 100) * motion.speed;
+            motion.vx = ((z_val / 100) * motion.speed) + motion.speed;
           }
       }
 
